@@ -249,8 +249,8 @@
     (phase match)
     (rank (value ?p) (process yes))
     (technique (name Naked-Single) (rank ?p))
-    (possible (value ?v) (diag ?d&:(<> 0 ?d)) (id ?id))
-    (not (possible (value ?v) (diag ?d) (id ?id)))
+    (possible (value ?v) (diag ?d&:(> 0 ?d)) (id ?id))
+    (not (possible (value ?v) (id ?id)))
     (possible (value ?v) (diag ?d) (id ?id2&~id))
     (not (impossible (id ?id2) (value ?v) (rank ?p)))
     
@@ -341,17 +341,19 @@
 
 (defrule hidden-single-diag
    (phase match)
+   
    (rank (value ?p) (process yes))
    (technique (name Hidden-Single) (rank ?p))
-   (possible (value ?v) (diag ?d&:(<> 0 ?d)) (id ?id))
-   (not (possible (value ?v) (diag ?d) (id ~?id)))
-   (possible (value ?v2&~?v) (diag ?d) (id ?id))
    
-   (not (impossible (id ?id) (value ?v2) (rank ?p)))
+   (possible (value ?v) (diag ?d&:(> 0 ?d)) (id ?id))
+   (not (possible (value ?v) (diag ?d) (id ?id0&~?id)))
+   (possible (value ?v0&~?v) (id ?id))
+   
+   (not (impossible (id ?id) (value ?v0) (rank ?p)))
 
    =>
    
-   (assert (impossible (id ?id) (value ?v2) (rank ?p) (reason "Hidden Single")))
+   (assert (impossible (id ?id) (value ?v0) (rank ?p) (reason "Hidden Single")))
 )
    
 ;;; *******************
@@ -539,6 +541,34 @@
 ;;; naked-pairs-diag
 ;;; ****************
 
+(defrule naked-pairs-row
+
+   (phase match)
+
+   (rank (value ?p) (process yes))
+
+   (technique (name Naked-Pairs) (rank ?p))
+   
+   (possible (value ?v1) (row ?r) (column ?c1))
+   
+   (possible (value ?v2&~?v1) (row ?r) (column ?c1))
+   
+   (not (possible (value ~?v2&~?v1) (row ?r) (column ?c1)))
+   
+   (possible (value ?v1) (row ?r) (column ?c2&~?c1))
+   
+   (possible (value ?v2) (row ?r) (column ?c2))
+   
+   (not (possible (value ~?v2&~?v1) (row ?r) (column ?c2)))
+
+   (possible (value ?v& ?v1 | ?v2) (row ?r) (column ~?c1&~?c2) (id ?id))
+
+   (not (impossible (id ?id) (value ?v) (rank ?p)))
+
+   =>
+   
+   (assert (impossible (id ?id) (value ?v) (rank ?p) (reason "Naked Pairs")))
+)
 
 ;;; ***************
 ;;; naked-pairs-row
