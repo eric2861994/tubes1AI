@@ -50,7 +50,7 @@
    (assert (technique (name Locked-Candidate-Single-Line) (rank 3)))
    (assert (technique (name Locked-Candidate-Multiple-Lines) (rank 4)))
    (assert (technique (name Naked-Pairs) (rank 5)))
-   (assert (technique (name Hidden-Pairs) (rank 6)))
+   (assert (technique (name Hidden-Pairs) (rank 6))) ; udah periksa sampai sini
    (assert (technique (name X-Wing) (rank 7)))
    (assert (technique (name Naked-Triples) (rank 8)))
    (assert (technique (name Hidden-Triples) (rank 9)))
@@ -226,11 +226,11 @@
     (phase match)
     (rank (value ?p) (process yes))
     (technique (name Naked-Single) (rank ?p))
-    
+
     (possible (value ?v) (diag ?d&:(> ?d 0)) (id ?id))
     (not (possible (value ~?v) (id ?id)))
     (possible (value ?v) (diag ?d) (id ?id2&~?id))
-    
+
     (not (impossible (id ?id2) (value ?v) (rank ?p)))
 
     =>
@@ -525,13 +525,10 @@
    (phase match)
 
    (rank (value ?p) (process yes))
-
    (technique (name Naked-Pairs) (rank ?p))
 
    (possible (value ?v1) (diag ?d&:(> ?d 0)) (row ?r))
-
    (possible (value ?v2&~?v1) (diag ?d) (row ?r))
-
    (not (possible (value ~?v2&~?v1) (diag ?d) (row ?r) ))
 
    (possible (value ?v1) (diag ?d) (row ?r1&~?r))
