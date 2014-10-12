@@ -73,12 +73,12 @@
    (assert (technique (name Locked-Candidate-Single-Line) (rank 3)))
    (assert (technique (name Locked-Candidate-Multiple-Lines) (rank 4)))
 ;   (assert (technique (name Naked-Pairs) (rank 5)))
-;   (assert (technique (name Hidden-Pairs) (rank 6)))
-;   (assert (technique (name X-Wing) (rank 7)))
-;   (assert (technique (name Naked-Triples) (rank 8)))
-;   (assert (technique (name Hidden-Triples) (rank 9)))
-;   (assert (technique (name XY-Wing) (rank 10)))
-;   (assert (technique (name Swordfish) (rank 11)))
+   (assert (technique (name Hidden-Pairs) (rank 6)))
+   (assert (technique (name X-Wing) (rank 7)))
+   (assert (technique (name Naked-Triples) (rank 8)))
+   (assert (technique (name Hidden-Triples) (rank 9)))
+   (assert (technique (name XY-Wing) (rank 10)))
+   (assert (technique (name Swordfish) (rank 11)))
 ;   (assert (technique (name Duplicate-Color) (rank 12)))
 ;   (assert (technique (name Color-Conjugate-Pair) (rank 13)))
 ;   (assert (technique (name Multi-Color-Type-1) (rank 14)))
@@ -801,6 +801,29 @@
 ;;; Hidden Pairs
 ;;; ############
 
+;;; *****************
+;;; hidden-pairs-diag
+;;; *****************
+
+(defrule hidden-pairs-diag
+
+   (phase match)
+
+   (rank (value ?p) (process yes))
+   (technique (name Hidden-Pairs) (rank ?p))
+   
+   (possible (value ?v1) (diag ?d&:(> d 0)) (row ?r))
+   (possible (value ?v2&~?v1) (diag ?d) (row ?r))
+   (possible (value ?v1) (diag ?d) (row ?r0&~?r))
+   (possible (value ?v2) (diag ?d) (row ?r0))
+   (not (possible (value ?v1 | ?v2) (diag ?d) (row ~?r&~?r0)))
+   (possible (value ?v&~?v1&~?v2) (diag ?d) (row ?r | ?r0) (id ?id))
+
+   (not (impossible (id ?id) (value ?v) (rank ?p)))
+
+   =>
+   
+   (assert (impossible (id ?id) (value ?v) (rank ?p) (reason "Hidden Pairs"))))
 
 ;;; ****************
 ;;; hidden-pairs-row
@@ -970,21 +993,48 @@
 ;;; generate-triples
 ;;; ****************
 
-;(defrule generate-triples
-;   
-;   (rank (value ?p) (process yes))
-;
-;   (technique (name Naked-Triples) (rank ?p))
-;   
-;   (size-value (size ?sv1&:(<= ?sv1 ?s)) (value ?v1))
-; 
-;   (size-value (size ?sv2&:(<= ?sv2 ?s)) (value ?v2&:(> ?v2 ?v1)))
-;
-;   (size-value (size ?sv3&:(<= ?sv3 ?s)) (value ?v3&:(> ?v3 ?v2)))
-;
-;   =>
-;   
-;   (assert (triple ?v1 ?v2 ?v3)))
+(defrule generate-triples
+   
+   (rank (value ?p) (process yes))
+   (technique (name Naked-Triples) (rank ?p))
+   
+   (pos-value ?v1))
+   (pos-value ?v2&:(> ?v2 ?v1))
+   (pos-value ?v3&:(> ?v3 ?v2))
+
+   =>
+   
+   (assert (triple ?v1 ?v2 ?v3))
+)
+
+;;; ******************
+;;; naked-triples-diag
+;;; ******************
+
+(defrule naked-triples-diag
+
+   (phase match)
+
+   (rank (value ?p) (process yes))
+   (technique (name Naked-Triples) (rank ?p))
+   
+   (triple ?v1 ?v2 ?v3)
+   
+   (possible (value ?v1) (diag ?d&:(> ?d 0)) (id ?id1))
+   (not (possible (value ~?v1&~?v2&~?v3) (id ?id1)))
+   (possible (value ?v2) (diag ?d) (id ?id2&~?id1))
+   (not (possible (value ~?v1&~?v2&~?v3) (id ?id2)))
+   (possible (value ?v3) (diag ?d) (id ?id3&~?id2&~?id1))
+   (not (possible (value ~?v1&~?v2&~?v3) (id ?id3)))
+   
+   (possible (value ?v& ?v1 | ?v2 | ?v3) (diag ?d) (id ?id&~?id1&~?id2&~?id3))
+
+   (not (impossible (id ?id) (value ?v) (rank ?p)))
+
+   =>
+   
+   (assert (impossible (id ?id) (value ?v) (rank ?p) (reason "Naked Triples")))
+)
 
 ;;; *****************
 ;;; naked-triples-row
@@ -1091,6 +1141,34 @@
 ;;; ##############
 ;;; Hidden Triples
 ;;; ##############
+
+;;; ********************
+;;; hidden-triples-diag
+;;; ********************
+
+(defrule hidden-triples-diag
+
+   (phase match)
+
+   (rank (value ?p) (process yes))
+   (technique (name Hidden-Triples) (rank ?p))
+   
+   (triple ?v1 ?v2 ?v3)
+   
+   (possible (value ?v1) (id ?id1) (diag ?d&:(> ?d 0)))
+   (possible (value ?v2) (id ?id2&~?id1) (diag ?d))
+   (possible (value ?v3) (id ?id3&~?id2&~?id1) (diag ?d))
+   
+   (not (possible (value ?v1 | ?v2 | ?v3) (id ~?id3&~?id2&~?id1) (diag ?d)))
+   
+   (possible (value ?v&~?v1&~?v2&~?v3) (id ?id& ?id1 | ?id2 | ?id3))
+
+   (not (impossible (id ?id) (value ?v) (rank ?p)))
+
+   =>
+   
+   (assert (impossible (id ?id) (value ?v) (rank ?p) (reason "Hidden Triples")))
+)
 
 ;;; ******************
 ;;; hidden-triples-row
