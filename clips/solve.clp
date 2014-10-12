@@ -331,6 +331,137 @@
    
    (assert (impossible (id ?id2) (value ?v) (rank ?p) (reason "Naked Single"))))
 
+;;; ###########
+;;; Naked Pairs
+;;; ###########
+
+;;; ***************
+;;; naked-pairs-row
+;;; ***************
+
+(defrule naked-pairs-row
+
+   (phase match)
+
+   (rank (value ?p) (process yes))
+
+   (technique (name Naked-Pairs) (rank ?p))
+   
+   (possible (value ?v1) (row ?r) (column ?c1))
+   
+   (possible (value ?v2&~?v1) (row ?r) (column ?c1))
+   
+   (not (possible (value ~?v2&~?v1) (row ?r) (column ?c1)))
+   
+   (possible (value ?v1) (row ?r) (column ?c2&~?c1))
+   
+   (possible (value ?v2) (row ?r) (column ?c2))
+   
+   (not (possible (value ~?v2&~?v1) (row ?r) (column ?c2)));;Pada baris yang sama tidak ada nilai selain v2 dan v1 di kolom c2
+
+   (possible (value ?v& ?v1 | ?v2) (row ?r) (column ~?c1&~?c2) (id ?id))
+
+   (not (impossible (id ?id) (value ?v) (rank ?p)))
+
+   =>
+   
+   (assert (impossible (id ?id) (value ?v) (rank ?p) (reason "Naked Pairs"))))
+
+;;; ******************
+;;; naked-pairs-column
+;;; ******************
+
+(defrule naked-pairs-column
+
+   (phase match)
+
+   (rank (value ?p) (process yes))
+
+   (technique (name Naked-Pairs) (rank ?p))
+
+   (possible (value ?v1) (row ?r1) (column ?c))
+   
+   (possible (value ?v2&~?v1) (row ?r1) (column ?c))
+   
+   (not (possible (value ~?v2&~?v1) (row ?r1) (column ?c)))
+   
+   (possible (value ?v1) (row ?r2&~?r1) (column ?c))
+   
+   (possible (value ?v2) (row ?r2) (column ?c))
+   
+   (not (possible (value ~?v2&~?v1) (row ?r2) (column ?c)))
+
+   (possible (value ?v& ?v1 | ?v2) (row ~?r1&~?r2) (column ?c) (id ?id))
+
+   (not (impossible (id ?id) (value ?v) (rank ?p)))
+
+   =>
+   
+   (assert (impossible (id ?id) (value ?v) (rank ?p) (reason "Naked Pairs"))))
+
+;;; *****************
+;;; naked-pairs-group
+;;; *****************
+
+(defrule naked-pairs-group
+
+   (phase match)
+
+   (rank (value ?p) (process yes))
+
+   (technique (name Naked-Pairs) (rank ?p))
+
+   (possible (value ?v1) (group ?g) (id ?id1))
+   
+   (possible (value ?v2&~?v1) (id ?id1))
+   
+   (not (possible (value ~?v2&~?v1) (id ?id1)))
+   
+   (possible (value ?v1) (group ?g) (id ?id2&~?id1))
+   
+   (possible (value ?v2) (id ?id2))
+   
+   (not (possible (value ~?v2&~?v1) (id ?id2)))
+
+   (possible (value ?v& ?v1 | ?v2) (group ?g) (id ?id&~?id2&~?id1))
+
+   (not (impossible (id ?id) (value ?v) (rank ?p)))
+
+   =>
+   
+   (assert (impossible (id ?id) (value ?v) (rank ?p) (reason "Naked Pairs"))))
+
+;;; ***************
+;;; naked-pairs-diag
+;;; ***************
+
+(defrule naked-pairs-diag
+
+   (phase match)
+
+   (rank (value ?p) (process yes))
+
+   (technique (name Naked-Pairs) (rank ?p))
+   
+   (possible (value ?v1) (diag ?d&:(> ?d 0)) (row ?r) )
+   
+   (possible (value ?v2&~?v1) (diag ?d) (row ?r))
+   
+   (not (possible (value ~?v2&~?v1) (diag ?d) (row ?r) ))
+   
+   (possible (value ?v1) (diag ?d) (row ?r1&~?r))
+   
+   (possible (value ?v2) (diag ?d) (row ?r1) )
+   
+   (not (possible (value ~?v2&~?v1) (diag ?d) (row ?r1)))
+
+   (possible (value ?v& ?v1 | ?v2) (diag ?d) (row ~?r1&~?r) (id ?id))
+
+   (not (impossible (id ?id) (value ?v) (rank ?p)))
+
+   =>
+   
+   (assert (impossible (id ?id) (value ?v) (rank ?p) (reason "Naked Pairs")))) 
 ;;; ##############
 ;;; Hidden Singles
 ;;; ##############
