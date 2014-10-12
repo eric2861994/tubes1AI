@@ -2,7 +2,5 @@
 (load "sudoku.clp")
 (load "solve.clp")
 (load "output.clp")
-(load "sudoku-x-mini-tc1.clp")
-(load "forward.clp")
 (reset)
 (run)
