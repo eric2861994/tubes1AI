@@ -1,0 +1,6 @@
+- Untuk mengecek apakah paket dapat dikirimkan dari satu komputer ke komputer lain. masukkan perintah ini
+	ke komputer sumber
+		ping [alamat ip tujuan]
+
+- Untuk mengetahui rute yang dilalui masukkan perintah
+		traceroute [alamat ip tujuan]
