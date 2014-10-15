@@ -286,10 +286,35 @@
    (not (rank (value ?p&:(> ?p ?last))))
 
    (not (technique (rank ?next&:(> ?next ?last))))
+   
+   (exists (unsolved))
+
+   =>
+
+   (retract ?f)
+
+   (assert (phase init-forward))
+)
+
+(defrule begin-output1
+   (declare (salience -20))
+
+   ?f <- (phase match)
+
+   (not (impossible))
+
+   (rank (value ?last))
+
+   (not (rank (value ?p&:(> ?p ?last))))
+
+   (not (technique (rank ?next&:(> ?next ?last))))
+   
+   (not (unsolved))
 
    =>
 
    (retract ?f)
 
    (assert (phase final-output))
-   (assert (print-position 1 1)))
+   (assert (print-position 1 1))
+)
